@@ -1,7 +1,8 @@
 import scrapy
 
+
 class IceCreamSpider(scrapy.Spider):
-    name = "jobs"
+    name = "icecream"
 
     def start_requests(self):
         urls = [
@@ -11,8 +12,10 @@ class IceCreamSpider(scrapy.Spider):
             yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
-        flavor = response.url.split("/")[-1]
-        filename = 'quotes-%s.html' % flavor
+        flavors = response.css('description').xpath('//h4/text()').extract()
+        filename = 'flavors.html'
         with open(filename, 'wb') as f:
-            f.write(response.body)
+            for flavor in flavors:
+                f.write(flavor)
+                f.write('\n')
         self.log('Saved file %s' % filename)
